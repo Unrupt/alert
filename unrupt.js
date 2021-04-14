@@ -619,7 +619,8 @@ function addStream(stream, kind) {
 		Playbeep("soundbeep");
 		 if( initiator )
 		{
-		document.getElementById("unruptToggle").click();
+		sendMessage(fid, mid, "cheatUnruptToggle", true);
+		
 		 }
 		
 	}	
