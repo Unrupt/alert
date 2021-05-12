@@ -57,6 +57,7 @@ var extesion = "ogg";
 var showpanel = '1';
 var toggleMute;
 var unruptEnabled = true;
+var startofcall = true;
 var toggleUnrupt;
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
@@ -262,6 +263,10 @@ function yourProc(node) {
     console.log('PauseButton!!!', pb);
 
     var oldmute = false;
+	
+	// if call just started unrupt is off 
+	
+	
 
     toggleUnrupt = () => {
         var ubi = $('#pwsIcon');
@@ -397,6 +402,7 @@ function yourProc(node) {
         }
     };
     node.connect(buffer);
+	
     procs.push(buffer)
     return buffer;
 }
@@ -470,6 +476,7 @@ function myProc(node) {
     };
     node.connect(buffer);
     procs.push(buffer);
+	
     return buffer;
 }
 
@@ -617,12 +624,6 @@ function addStream(stream, kind) {
 		if (beep == '0')
 	{
 		Playbeep("soundbeep");
-		 if( initiator )
-		{
-		sendMessage(fid, mid, "cheatUnruptToggle", true);
-		
-		 }
-		
 	}	
         var buffproc = yourProc(scope);
         var scope2 = doScopeNode(yourac, buffproc, "earscope");
@@ -1281,6 +1282,22 @@ $(document).ready(_ => {
 
     $('#version').text(properties.versionname);
     tick = window.setInterval(t => {
+	if (startofcall && !initiator && remoteStream)
+	{
+	
+	
+	
+    ///sendMessage(fid, mid, "cheatUnruptToggle", true);
+	$('#pwsIcon').click();
+	startofcall = false ;
+	}
+	
+	if (!unruptEnabled && !videoEnabled && remoteStream)
+	{
+		document.getElementById('out').muted = false;
+        //document.getElementById('out').play();
+	}
+	
         var scale = properties.maxStashFrames / 100.0;
         var timeline_length = Math.floor(properties.maxStashFrames * properties.procFramesize / 44100);
         var spk = backlog_spk / scale;
