@@ -87,6 +87,15 @@ function messageDeal(event) {
         case "cheatUnruptToggle":
             toggleUnrupt();
             break;
+			
+		case "pauseon":
+		playsound('pauseon');
+        break;
+		
+		case "pauseoff":
+		playsound('pauseoff');
+        break;
+		
         case "offer":
             if (pc) {
                 if (session == null) {
@@ -144,6 +153,24 @@ function sendJ(m) {
     var message = JSON.stringify(m);
     console.log("sending ", m);
     socket.send(message);
+}
+
+function playsound(auidioid){
+	 
+	switch (auidioid) {
+	case "pauseon":
+		var sound = document.getElementById('pauseon');
+        break;
+		
+		case "pauseoff":
+		var sound = document.getElementById('pauseoff');
+        break;	
+		
+		
+	}
+ 
+  sound.play();	
+	
 }
 
 function sendMessage(to, from, type, data) {
@@ -309,11 +336,15 @@ function yourProc(node) {
             pbi.addClass("fa-pause-circle");
             oldmute = mute;
             setMute(true);
+			sendMessage(fid, mid, "pauseon", true);
+			playsound('pauseon');
         } else {
             paused = false;
             pbi.removeClass("fa-pause-circle");
             pbi.addClass("fa-play-circle");
             setMute(oldmute);
+			sendMessage(fid, mid, "pauseoff", true);
+			playsound('pauseoff');
         }
     });
 
