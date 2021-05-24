@@ -336,6 +336,7 @@ function yourProc(node) {
             pbi.addClass("fa-pause-circle");
             oldmute = mute;
             setMute(true);
+			document.getElementById("out").pause();
 			sendMessage(fid, mid, "pauseon", true);
 			playsound('pauseon');
         } else {
@@ -448,7 +449,7 @@ function setMute(m) {
         mi.addClass("fa-microphone-slash");
         audioTracks[0].enabled = false;
         document.getElementById("out").muted = false;
-        document.getElementById("out").pause();
+        //document.getElementById("out").pause();
     } else {
         mi.removeClass("fa-microphone-slash");
         mi.addClass("fa-microphone");
