@@ -57,6 +57,7 @@ var extesion = "ogg";
 var showpanel = '1';
 var toggleMute;
 var unruptEnabled = true;
+var startofcall = true;
 var toggleUnrupt;
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
@@ -86,6 +87,15 @@ function messageDeal(event) {
         case "cheatUnruptToggle":
             toggleUnrupt();
             break;
+			
+		case "pauseon":
+		playsound('pauseon');
+        break;
+		
+		case "pauseoff":
+		playsound('pauseoff');
+        break;
+		
         case "offer":
             if (pc) {
                 if (session == null) {
@@ -143,6 +153,24 @@ function sendJ(m) {
     var message = JSON.stringify(m);
     console.log("sending ", m);
     socket.send(message);
+}
+
+function playsound(auidioid){
+	 
+	switch (auidioid) {
+	case "pauseon":
+		var sound = document.getElementById('pauseon');
+        break;
+		
+		case "pauseoff":
+		var sound = document.getElementById('pauseoff');
+        break;	
+		
+		
+	}
+ 
+  sound.play();	
+	
 }
 
 function sendMessage(to, from, type, data) {
@@ -262,6 +290,10 @@ function yourProc(node) {
     console.log('PauseButton!!!', pb);
 
     var oldmute = false;
+	
+	// if call just started unrupt is off 
+	
+	
 
     toggleUnrupt = () => {
         var ubi = $('#pwsIcon');
@@ -300,15 +332,20 @@ function yourProc(node) {
 
         if (!paused) {
             paused = true;
-            pbi.removeClass("fa-play-circle");
-            pbi.addClass("fa-pause-circle");
-            oldmute = mute;
-            setMute(true);
-        } else {
-            paused = false;
             pbi.removeClass("fa-pause-circle");
             pbi.addClass("fa-play-circle");
+            oldmute = mute;
+            setMute(true);
+			document.getElementById("out").pause();
+			sendMessage(fid, mid, "pauseon", true);
+			playsound('pauseon');
+        } else {
+            paused = false;
+            pbi.removeClass("fa-play-circle");
+            pbi.addClass("fa-pause-circle");
             setMute(oldmute);
+			sendMessage(fid, mid, "pauseoff", true);
+			playsound('pauseoff');
         }
     });
 
@@ -397,6 +434,7 @@ function yourProc(node) {
         }
     };
     node.connect(buffer);
+	
     procs.push(buffer)
     return buffer;
 }
@@ -411,7 +449,7 @@ function setMute(m) {
         mi.addClass("fa-microphone-slash");
         audioTracks[0].enabled = false;
         document.getElementById("out").muted = false;
-        document.getElementById("out").pause();
+        //document.getElementById("out").pause();
     } else {
         mi.removeClass("fa-microphone-slash");
         mi.addClass("fa-microphone");
@@ -470,6 +508,7 @@ function myProc(node) {
     };
     node.connect(buffer);
     procs.push(buffer);
+	
     return buffer;
 }
 
@@ -1275,6 +1314,22 @@ $(document).ready(_ => {
 
     $('#version').text(properties.versionname);
     tick = window.setInterval(t => {
+	if (startofcall && !initiator && remoteStream)
+	{
+	
+	
+	
+    ///sendMessage(fid, mid, "cheatUnruptToggle", true);
+	$('#pwsIcon').click();
+	startofcall = false ;
+	}
+	
+	if (!unruptEnabled && !videoEnabled && remoteStream)
+	{
+		document.getElementById('out').muted = false;
+        //document.getElementById('out').play();
+	}
+	
         var scale = properties.maxStashFrames / 100.0;
         var timeline_length = Math.floor(properties.maxStashFrames * properties.procFramesize / 44100);
         var spk = backlog_spk / scale;
